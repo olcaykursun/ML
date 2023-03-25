@@ -73,7 +73,7 @@ for i in range(N_test):
     x = vectors_test[i].toarray().flatten()
     for clas in range(num_classes):
         likelihood = np.dot(likelihoods[clas], x)
-        posteriors[clas] = priors[clas]+likelihood
+        posteriors[clas] = np.log(priors[clas])+likelihood
     predicted_class = np.argmax(posteriors)
     if predicted_class == y_test[i]:
         correct_classification = correct_classification + 1
@@ -85,7 +85,7 @@ print(correct_classification/N_test)
 
 #TESTING - less SLOW
 start = timer()
-posteriors = np.matmul(likelihoods,vectors_test.transpose().toarray()) + priors.reshape((-1,1))
+posteriors = np.matmul(likelihoods,vectors_test.transpose().toarray()) + np.log(priors).reshape((-1,1))
 end = timer()
 print(end - start, 'secs') # Time in seconds, e.g. 5.38091952400282        
 print((np.argmax(posteriors, axis=0) == y_test).mean())
