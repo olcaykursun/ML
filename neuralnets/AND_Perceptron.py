@@ -77,8 +77,13 @@ for epoch in range(Nepochs + 2):  # No of times to go over the data (no updates 
         y = sigmoid(o)
         if (y > 0.5 and r == 1) or (y <= 0.5 and r == 0):
             numcorr = numcorr + 1  # this calculates the training accuracy
-            
-        E_t = -r * np.log2(y) - (1 - r) * np.log2(1 - y) #negative log-likelihood or cross-entropy between labels and predicted posteriors
+        
+        if y>=1:
+            y = 0.9999  #to avoid nan or inf
+        elif y<=0:
+            y = 0.0001
+        else:
+            E_t = -r * np.log2(y) - (1 - r) * np.log2(1 - y) #negative log-likelihood or cross-entropy between labels and predicted posteriors
         total_error = total_error + E_t   #accumulate total error
 
         # update except the first and last epochs not to affect the accuracy&error
@@ -102,7 +107,7 @@ for epoch in range(Nepochs + 2):  # No of times to go over the data (no updates 
 set_backend('module://matplotlib_inline.backend_inline') 
 # You can set the Matplotlib backend either programmatically or by typing the magic command.
 # Programmatically:
-# set_backend('module://matplotlib_inline.backend_inline')
+set_backend('module://matplotlib_inline.backend_inline')
 # Magic command (for Jupyter Notebook) in console:
 # %matplotlib inline
 
