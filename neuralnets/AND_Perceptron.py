@@ -51,7 +51,7 @@ plot_data_2D(data, target)
 
 #%%
 #linear perceptron
-Nepochs = 100
+Nepochs = 50
 eta = 0.01  # learning rate
 train_x = np.insert(data, 0, 1, axis=1)
 
@@ -61,13 +61,15 @@ if init_randomly:
     rng = np.random.RandomState(1234567)
     w = rng.randn(d+1) / 5  # 1D is sufficient until we add a hidden layer with hidden units
 else:
-    w = np.array([1, 1, -1])
+    w = np.array([1, 1, -1]) #a bad start to see how it would progress..
     
-plot_linear_discriminant(w)
+plot_linear_discriminant(w) #show the initial one, can be deliberately selected as a bad start by the previous line
 
-for epoch in range(Nepochs + 2):  # Times to go over the data (no updates in the first and last epochs to see accuracies)
-    numcorr = 0
-    E = 0
+accuracies = [] #to keep track of accuracies as a function of epochs
+losses = [] #to keep track of loss as a function of epochs
+for epoch in range(Nepochs + 2):  # No of times to go over the data (no updates in the first and last epochs to see accuracies)
+    numcorr = 0  #number of correct classifications needed for accuracy calculation
+    total_error = 0  #negative-log-likelihood needed for error calculation
     for t in range(n_samples):
         r = target[t]
         x = train_x[t, :]
@@ -76,16 +78,44 @@ for epoch in range(Nepochs + 2):  # Times to go over the data (no updates in the
         if (y > 0.5 and r == 1) or (y <= 0.5 and r == 0):
             numcorr = numcorr + 1  # this calculates the training accuracy
             
-        E_t = -r * np.log2(y) - (1 - r) * np.log2(1 - y)
-        E = E_t
+        E_t = -r * np.log2(y) - (1 - r) * np.log2(1 - y) #negative log-likelihood or cross-entropy between labels and predicted posteriors
+        total_error = total_error + E_t   #accumulate total error
 
         # update except the first and last epochs not to affect the accuracy&error
         if epoch not in [0, Nepochs + 1]:
             delta = r - y
             w = w + eta * delta * x
             
-    # Error is expected to reduce with updates
-    print(f'{epoch=}, accuracy = {numcorr / n_samples}, MSE = {E / n_samples}')  
+    # Accuracy and Error is expected to reduce with updates
+    accuracy = numcorr / n_samples
+    accuracies.append(accuracy)
+    loss = total_error / n_samples
+    losses.append(loss)    
+    print(f'{epoch=}, {accuracy=}, {loss}')  
     
-    if epoch % 5 == 4:
+    if epoch % 2 == 1: #plot it once every 2 epochs
         plot_linear_discriminant(w)
+
+#%%
+# Plot the accuracy/error values
+
+set_backend('module://matplotlib_inline.backend_inline') 
+# You can set the Matplotlib backend either programmatically or by typing the magic command.
+# Programmatically:
+# set_backend('module://matplotlib_inline.backend_inline')
+# Magic command (for Jupyter Notebook) in console:
+# %matplotlib inline
+
+plt.figure()
+plt.plot(range(Nepochs + 2), losses, marker='o')
+plt.xlabel('No of Epochs Trained')
+plt.ylabel('Loss')
+plt.show(block=True)
+
+plt.figure()
+plt.plot(range(Nepochs + 2), accuracies, marker='o')
+plt.xlabel('No of Epochs Trained')
+plt.ylabel('Accuracy (%)')
+plt.show(block=True)
+
+input("Press Enter to exit...")
