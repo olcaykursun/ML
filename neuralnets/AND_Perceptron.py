@@ -24,7 +24,7 @@ def plot_data_2D(data, labels):
     plt.pause(0.5)
     
 def plot_linear_discriminant(w):
-    xx = np.linspace(-5, 5)
+    xx = np.array([-5, 5])
     yy = (-w[0] - xx * w[1]) / w[2]
     plt.plot(xx, yy, 'k-')
     plt.pause(0.5)

@@ -46,7 +46,7 @@ plot_data_and_boundary(data, target)
 
 # Linear perceptron using scikit-learn
 Nepochs = 50
-clf = SGDClassifier(random_state=218888, eta0=1e-5, loss='log_loss', penalty=None, warm_start=True)
+clf = SGDClassifier(random_state=218888, eta0=1e-2, learning_rate='constant', loss='log_loss', penalty=None, warm_start=True)
 
 # Initialize variables for storing progress
 accuracies = []
